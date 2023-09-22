@@ -98,6 +98,12 @@ const Header = ({ history, tags, stateGonzalo }) => {
   const { data: usuAsig } = useQuery(GET_USUARIO_ASIG, {
     variables: { idUsuAsig: usu_asig_id },
   });
+
+  console.log(stateGonzalo);
+
+  const { data: dataCreador } = useQuery(GET_USUARIO_ASIG, {
+    variables: { idUsuAsig: stateGonzalo?.usu_id },
+  });
   const [valorMonedaBase, setValorMonedaBase] = useState(null);
 
   useEffect(() => {
@@ -127,6 +133,8 @@ const Header = ({ history, tags, stateGonzalo }) => {
     showDrawer();
     // setNegId(deal.neg_id);
   };
+
+  console.log("DATA", dataCreador);
 
   const goToBack = () => {
     history.goBack();
@@ -168,7 +176,7 @@ const Header = ({ history, tags, stateGonzalo }) => {
                         maximumFractionDigits: 2,
                       })}
                     </span>{" "}
-                    {monConfig[0] &&
+                    {/* {monConfig[0] &&
                       cotizacionDolar &&
                       monConfig[0].mon_id !== stateGonzalo.mon_id && (
                         <span className="base_currency">
@@ -183,7 +191,7 @@ const Header = ({ history, tags, stateGonzalo }) => {
                           </Tooltip>
                           )
                         </span>
-                      )}
+                      )} */}
                   </p>
                 ) : (
                   <p className="deal_amount">
@@ -194,7 +202,7 @@ const Header = ({ history, tags, stateGonzalo }) => {
                         maximumFractionDigits: 2,
                       })}
                     </span>{" "}
-                    {monConfig[0] &&
+                    {/* {monConfig[0] &&
                       cotizacionDolar &&
                       monConfig[0].mon_id !== stateGonzalo.mon_id && (
                         <span className="base_currency">
@@ -209,7 +217,7 @@ const Header = ({ history, tags, stateGonzalo }) => {
                           </Tooltip>
                           )
                         </span>
-                      )}
+                      )} */}
                   </p>
                 )}
                 <div className="deal_business">
@@ -247,13 +255,23 @@ const Header = ({ history, tags, stateGonzalo }) => {
                     />
                   </div>
                   <div className="info_avatar">
+                    {dataCreador && (
+                      <span className="username">
+                        {dataCreador.getUsuAsigResolver[0].usu_nombre}
+                      </span>
+                    )}
+
+                    <span className="role">Creador</span>
+                  </div>
+
+                  <div className="info_avatar">
                     {usuAsig && (
                       <span className="username">
                         {usuAsig.getUsuAsigResolver[0].usu_nombre}
                       </span>
                     )}
 
-                    <span className="role">Propietario</span>
+                    <span className="role">Asignado</span>
                   </div>
                 </div>
                 {stateGonzalo.neg_estado === 0 && (
