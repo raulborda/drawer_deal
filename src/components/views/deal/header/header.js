@@ -17,7 +17,10 @@ import StepsHeader from "./stepsHeader";
 import "./styles.scss";
 import { DrawerContext } from "../../../context/DrawContext";
 import { GET_USUARIO_ASIG } from "../../../../Graphql/queries/usuario";
-import {  GET_EMBUDOS, GET_ETAPAS_EMBUDOS } from "../../../../Graphql/queries/embudos";
+import {
+  GET_EMBUDOS,
+  GET_ETAPAS_EMBUDOS,
+} from "../../../../Graphql/queries/embudos";
 import { conversionMonedaBase } from "../../../../utils/conversionMonedaBase";
 import TagsList from "../../../tags/tagsList";
 import TagItem from "../../../tags/tagItem";
@@ -49,27 +52,26 @@ const Header = ({ history, tags, stateGonzalo }) => {
     autorizado,
     setTagsList,
     etapasFinal,
-    pipeURL, 
-    setPipeURL
+    pipeURL,
+    setPipeURL,
   } = useContext(DealContext);
   const { setDrawerName, setDrawerDetail, showDrawer } =
     useContext(DrawerContext);
 
+  //PIPE POR URL
+  //  const url2 = window.location.search;
+  //  const parsed2 = queryString.parse(url2);
+  //  const pipePosition = parsed2.pipId;
+  //  const idpipURL = Number( pipePosition);
 
-     //PIPE POR URL
-    //  const url2 = window.location.search;
-    //  const parsed2 = queryString.parse(url2);   
-    //  const pipePosition = parsed2.pipId;    
-    //  const idpipURL = Number( pipePosition);
-     
-    //  setPipeURL(idpipURL);
+  //  setPipeURL(idpipURL);
 
-    const p =  Number(localStorage.getItem('pipeURL'));
-    setPipeURL(p)
-    //setPipeURL(124) // para probar desde local
-    //  console.log("Desde HEADER: ",pipeURL)
+  const p = Number(localStorage.getItem("pipeURL"));
+  setPipeURL(p);
+  //setPipeURL(124) // para probar desde local
+  //  console.log("Desde HEADER: ",pipeURL)
 
-  const [pipName,setPipName] = useState("");
+  const [pipName, setPipName] = useState("");
 
   const [namePipe, setNamePipe] = useState("");
   const [etaNombre, setEtaNombre] = useState("");
@@ -89,11 +91,9 @@ const Header = ({ history, tags, stateGonzalo }) => {
 
   const { data: dataPipeURL } = useQuery(GET_EMBUDOS, {
     variables: { pip_id: pipeURL },
-    pollInterval:2000
+    pollInterval: 2000,
   });
   //  console.log("dataPipeURL: ", dataPipeURL)
-
- 
 
   const { data: usuAsig } = useQuery(GET_USUARIO_ASIG, {
     variables: { idUsuAsig: usu_asig_id },
@@ -103,20 +103,14 @@ const Header = ({ history, tags, stateGonzalo }) => {
   useEffect(() => {
     if (!deal) return;
     if (!usuAsig) return;
-    if (dataPipeURL){
+    if (dataPipeURL) {
       setPipName(dataPipeURL.getPipelinesResolver);
     }
-
-  }, [
-     deal,
-     usuAsig,
-    dataPipeURL,
-  ]);
-
+  }, [deal, usuAsig, dataPipeURL]);
 
   useEffect(() => {
-    if (pipName){
-      setNamePipe(pipName.filter((pip) => (pip.pip_id == pipeURL)))
+    if (pipName) {
+      setNamePipe(pipName.filter((pip) => pip.pip_id == pipeURL));
     }
   }, [pipName]);
 
@@ -165,9 +159,35 @@ const Header = ({ history, tags, stateGonzalo }) => {
               </div>
 
               <div className="header_info">
-                {stateGonzalo.neg_valor && (
+                {stateGonzalo.neg_valor !== 0 ? (
                   <p className="deal_amount">
-                    <span>{mon_iso} </span>{" "}
+                    <span>{mon_iso} </span>
+                    <span>
+                      {" "}
+                      {stateGonzalo.neg_valor.toLocaleString("de-DE", {
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>{" "}
+                    {monConfig[0] &&
+                      cotizacionDolar &&
+                      monConfig[0].mon_id !== stateGonzalo.mon_id && (
+                        <span className="base_currency">
+                          (
+                          <span style={{ marginRight: 5 }}> {monIsoBase} </span>
+                          <Tooltip title="Valor equivalente a la moneda seleccionada en configuración del sistema">
+                            {(
+                              stateGonzalo.neg_valor / cotizacionDolar
+                            ).toLocaleString("de-DE", {
+                              maximumFractionDigits: 2,
+                            })}
+                          </Tooltip>
+                          )
+                        </span>
+                      )}
+                  </p>
+                ) : (
+                  <p className="deal_amount">
+                    <span>{mon_iso} </span>
                     <span>
                       {" "}
                       {stateGonzalo.neg_valor.toLocaleString("de-DE", {
@@ -203,17 +223,15 @@ const Header = ({ history, tags, stateGonzalo }) => {
                   </div>
                 )}
                 <div className="deal_pipe">
-                  {namePipe &&
-                  <>
-                          <FunnelPlotOutlined
-                            style={{ fontSize: 20, marginRight: 5 }}
-                          />
-                          <span>{namePipe[0].pip_nombre}</span>
-                          {/* {console.log(namePipe[0].pip_nombre)} */}
-                  </>
-
-                  }
-                  
+                  {namePipe && (
+                    <>
+                      <FunnelPlotOutlined
+                        style={{ fontSize: 20, marginRight: 5 }}
+                      />
+                      <span>{namePipe[0]?.pip_nombre}</span>
+                      {/* {console.log(namePipe[0].pip_nombre)} */}
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -282,15 +300,15 @@ const Header = ({ history, tags, stateGonzalo }) => {
                   </div>
                 )}
                 {/* {history.location.state && ( */}
-                  <div className="filtros">
-                    <Button
-                      type="ghost"
-                      onClick={goToBack}
-                      style={{ marginLeft: 5 }}
-                    >
-                      <LeftOutlined /> <span>Volver</span>
-                    </Button>
-                  </div>
+                {/* <div className="filtros">
+                  <Button
+                    type="ghost"
+                    onClick={goToBack}
+                    style={{ marginLeft: 5 }}
+                  >
+                    <LeftOutlined /> <span>Volver</span>
+                  </Button>
+                </div> */}
                 {/* )} */}
               </div>
 
