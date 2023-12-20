@@ -3,7 +3,6 @@ import {
   DeleteOutlined,
   FilePdfOutlined,
   PlusOutlined,
-  PrinterOutlined,
 } from "@ant-design/icons";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import {
@@ -17,6 +16,7 @@ import {
   Select,
   Table,
   InputNumber,
+  message,
 } from "antd";
 import React, {
   Fragment,
@@ -30,7 +30,8 @@ import { GET_PRODUCTOS_LIMIT } from "../../Graphql/queries/productos";
 import { setHistorial } from "../../utils/setHistorial";
 import { DealContext } from "../context/DealCotext";
 import { DrawerContext } from "../context/DrawContext";
-import PdfIcon from "../icons/pdf";
+import axios from "axios";
+import { Base64 } from "js-base64";
 
 const AddProduct = () => {
   // const [products, setProducts] = useState([]);
@@ -361,12 +362,91 @@ const AddProduct = () => {
     onClose();
   };
 
+  const getPDFPresupuesto = async (data) => {
+    try {
+      data = Base64.encode(JSON.stringify(data), true);
+
+      let config = {
+        method: "post",
+        maxBodyLength: Infinity,
+        url: `http://10.0.0.153:1400/pdfExport`,
+        // url: `https://us-central1-apiplatformwp.cloudfunctions.net/pdfExport`,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        responseType: "blob",
+        data: JSON.stringify({
+          url: "https://storage.googleapis.com/brocoly/64c90e320dcc24527926cdd8/public/presupuesto.html",
+          payload: data,
+        }),
+      };
+
+      const res = axios.request(config);
+
+      return await res;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const downloadPDF = (data) => {
+    const blob = new Blob([data], { type: "application/pdf" });
+
+    // Crea una URL del blob
+    const url = window.URL.createObjectURL(blob);
+
+    // Crea un elemento anchor
+    const a = document.createElement("a");
+    a.href = url;
+
+    // Setea el atributo download y el nombre con el que se va a descargar
+    a.download = "presupuesto.pdf";
+
+    // Dispara la descarga
+    a.click();
+
+    // Libera el objeto URL
+    window.URL.revokeObjectURL(url);
+  };
+
+  const onConfirmPDF = () => {
+    try {
+      const data = { deal, productos: dealProducts };
+      new Promise((resolve) => {
+        setTimeout(
+          () =>
+            resolve(
+              getPDFPresupuesto(data).then((res) => {
+                if (res && res.data) {
+                  downloadPDF(res.data);
+                } else {
+                  message.warning("No fue posible generar el PDF.");
+                }
+              })
+            ),
+          3000
+        );
+      });
+    } catch (error) {
+      message.warning("No fue posible generar el PDF.");
+    }
+  };
+
   return (
     <Fragment>
       <ConfigProvider renderEmpty={empty}>
         <div className="layout-wrapper">
           <span className="print-sheet">
-            <FilePdfOutlined style={{ color: "red" }} />
+            <Popconfirm
+              icon={null}
+              placement="leftTop"
+              title="¿Desea exportar a PDF?"
+              okText="Si"
+              onConfirm={onConfirmPDF}
+              cancelText="No"
+            >
+              <FilePdfOutlined style={{ color: "red" }} />
+            </Popconfirm>
           </span>
           <div className="layout-form">
             <Form

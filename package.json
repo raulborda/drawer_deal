@@ -25,6 +25,7 @@
     "craco-less": "^2.0.0",
     "graphql": "^15.3.0",
     "graphql-ws": "^5.10.1",
+    "js-base64": "^3.7.5",
     "less": "^3.11.2",
     "node-fetch": "^2.6.1",
     "postcss-loader": "^3.0.0",
