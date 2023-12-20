@@ -154,7 +154,7 @@ const NewTask = ({ edit }) => {
       tar_vencimiento: dateFrom || fechaVencimientoDefault,
       tar_horavencimiento: timeFrom || horaVencimientoDefault,
       est_id: 1,
-      usu_id: deal.usu_id,
+      usu_id: v.usu_asig_id ? v.usu_asig_id : deal.usu_asig_id,
       cli_id: deal.cli_id,
       ale_id: Number(v.ale_id),
       tar_alertanum: Number(v.tar_alertanum),
@@ -179,13 +179,13 @@ const NewTask = ({ edit }) => {
     newTareaResolver({
       variables: {
         idNegocio: negId,
-        idUsuario: deal.usu_id,
+        idUsuario: idUser,
         idCliente: deal.cli_id,
         idContacto: Number(v.con_id),
         inputTarea,
         inputNota,
         inputAdjunto,
-        idUsuarioAsignado: v.usu_asig_id,
+        idUsuarioAsignado: v.usu_asig_id ? v.usu_asig_id : deal.usu_asig_id,
       },
     }).then((tarea) => {
       const idTarea = tarea.data.newTareaResolver;
@@ -465,6 +465,7 @@ const NewTask = ({ edit }) => {
                       showSearch
                       placeholder="Usuario"
                       optionFilterProp="children"
+                      defaultValue={deal && deal.usu_asig_id}
                       // onChange={onChangeUser}
                       // onFocus={onFocus}
                       // onBlur={onBlur}

@@ -33,15 +33,15 @@ const StepsHeader = ({
     updateEtapaxNegocioResolver,
     negId,
     allSteps,
-    pipeURL, 
+    pipeURL,
     setPipeURL,
-    idPipeline
+    idPipeline,
+    esUsuarioAdmin,
   } = useContext(DealContext);
 
   const [hover, setHover] = useState();
   const [days, setDays] = useState([]);
   const [etapas, setEtapas] = useState([]);
-
 
   const {
     data: etapasPorId,
@@ -51,8 +51,6 @@ const StepsHeader = ({
     variables: { id: pipeURL },
     //pollInterval: 500,
   });
-
-  
 
   useEffect(() => {
     if (etapasPorId) {
@@ -67,7 +65,7 @@ const StepsHeader = ({
     stopPolling: stopTiempoPorEtapa,
   } = useQuery(GET_TIEMPO_ETAPA_POR_NEGOCIO, {
     variables: { idNegocio: negId },
-    pollInterval:2000
+    pollInterval: 2000,
   });
 
   useEffect(() => {
@@ -102,7 +100,7 @@ const StepsHeader = ({
       );
       return;
     }
-    if (deal.usu_asig_id !== idUser && idUser !== 1) {
+    if (deal.usu_asig_id !== idUser && !esUsuarioAdmin) {
       // Emite notificación.
       OpenNotification(
         <h3>Operación no permitida</h3>,
@@ -144,29 +142,24 @@ const StepsHeader = ({
     });
     // .catch((error) =>
 
-
     //setea  los cambios en el Historial
     setEtaId(Number(item));
-    if(etaPreviaId === null){
+    if (etaPreviaId === null) {
       setEtaPreviaId(Number(item));
-    }else{
-
+    } else {
       setEtaPreviaId(Number(etaIdNegocio));
     }
-
-    
 
     const prev = Number(etaIdNegocio);
     const et = Number(item);
 
-    
     //*ORIGINAL USA allSteps
     // const etaPrevia = allSteps.filter((etapa) => {
-      //   return Number(etapa.eta_id) === prev;
-      // })[0].eta_nombre;
-      
-      //se busca el nombre de la etapa previa en el array.
-      
+    //   return Number(etapa.eta_id) === prev;
+    // })[0].eta_nombre;
+
+    //se busca el nombre de la etapa previa en el array.
+
     const etaPrevia = etapas.filter((etapa) => {
       return Number(etapa.eta_id) === prev;
     })[0].eta_nombre;

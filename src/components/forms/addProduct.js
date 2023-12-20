@@ -1,5 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  FilePdfOutlined,
+  PlusOutlined,
+  PrinterOutlined,
+} from "@ant-design/icons";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import {
   Button,
@@ -25,18 +30,18 @@ import { GET_PRODUCTOS_LIMIT } from "../../Graphql/queries/productos";
 import { setHistorial } from "../../utils/setHistorial";
 import { DealContext } from "../context/DealCotext";
 import { DrawerContext } from "../context/DrawContext";
+import PdfIcon from "../icons/pdf";
 
 const AddProduct = () => {
   // const [products, setProducts] = useState([]);
   const Option = Select.Option;
   const [form] = Form.useForm();
   const [searchProduct, setSearchProduct] = useState("");
-  
+
   const [productList, setProductList] = useState([]);
   const [prodIdList, setProdIdList] = useState([]);
 
   const { onChildrenDrawerClose, onClose } = useContext(DrawerContext);
-
   const {
     newHistorialNegocioResolver,
     products,
@@ -235,7 +240,7 @@ const AddProduct = () => {
       render: (text, record) => {
         return (
           <span>
-            U$D{" "}
+            {deal.mon_iso}{" "}
             {Number(record.valor).toLocaleString("de-DE", {
               maximumFractionDigits: 2,
             })}
@@ -252,7 +257,7 @@ const AddProduct = () => {
       render: (text, record) => {
         return (
           <span>
-            U$D{" "}
+            {deal.mon_iso}{" "}
             {Number(record.cantidad * record.valor).toLocaleString("de-DE", {
               maximumFractionDigits: 2,
             })}
@@ -360,6 +365,9 @@ const AddProduct = () => {
     <Fragment>
       <ConfigProvider renderEmpty={empty}>
         <div className="layout-wrapper">
+          <span className="print-sheet">
+            <FilePdfOutlined style={{ color: "red" }} />
+          </span>
           <div className="layout-form">
             <Form
               name="products"
@@ -373,7 +381,6 @@ const AddProduct = () => {
                     name="prod_id"
                     rules={[{ required: true, message: "Producto requerido" }]}
                   >
-                    {/* <Input hidden value> </Input> */}
                     <Select
                       ref={selectProducto}
                       showSearch
@@ -465,29 +472,29 @@ const AddProduct = () => {
             </Row>
           </div>
           <div className="layout-footer">
-              <Fragment>
-                <Row gutter={[8, 8]}>
-                  <Col xs={12}>
-                    <Button
-                      onClick={() => {
-                        setDealProducts([]);
-                        onClose();
-                      }}
-                      type="default"
-                      block
-                    >
-                      Cancelar
+            <Fragment>
+              <Row gutter={[8, 8]}>
+                <Col xs={12}>
+                  <Button
+                    onClick={() => {
+                      setDealProducts([]);
+                      onClose();
+                    }}
+                    type="default"
+                    block
+                  >
+                    Cancelar
+                  </Button>
+                </Col>
+                <Col xs={12}>
+                  <Form.Item>
+                    <Button onClick={saveProducts} type="primary" block>
+                      Guardar
                     </Button>
-                  </Col>
-                  <Col xs={12}>
-                    <Form.Item>
-                      <Button onClick={saveProducts} type="primary" block>
-                        Guardar
-                      </Button>
-                    </Form.Item>
-                  </Col>
-                </Row>
-              </Fragment>
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Fragment>
           </div>
         </div>
       </ConfigProvider>

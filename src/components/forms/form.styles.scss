@@ -1,11 +1,11 @@
 @import '../../scss/variables';
+
 .layout-wrapper {
-	height: 89vh;
+	height: calc(100vh - 80px);
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
 	width: 100%;
-	// overflow: hidden;
 }
 
 .layout-wrapper-masive {
@@ -176,4 +176,20 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
+}
+
+
+.print-sheet{
+
+	position: absolute;
+	top:12px;
+	right: 24px;
+	font-size: 20px;
+	cursor: pointer;
+	
+}
+
+
+.print-sheet:hover{
+	color: $primary-color;
 }

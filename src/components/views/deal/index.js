@@ -85,6 +85,7 @@ const Deal = () => {
     setProducts,
     products,
     setSharedUsers,
+    esUsuarioAdmin,
   } = useContext(DealContext);
 
   const { setDrawerName, showDrawer } = useContext(DrawerContext);
@@ -132,8 +133,6 @@ const Deal = () => {
         return item.not_anclado === 1;
       });
 
-      
-
       setAnchorNotes(anchorNote);
 
       setTasks(JSON.parse(data.getTimeLineByNegocioResolver).dataTar);
@@ -146,7 +145,6 @@ const Deal = () => {
       });
 
       setAnchorTasks(anchorTask);
-
 
       setUploads(JSON.parse(data.getTimeLineByNegocioResolver).dataUp);
       const anchorUploads = JSON.parse(
@@ -177,22 +175,16 @@ const Deal = () => {
     return f;
   };
 
-
-
   useEffect(() => {
     // if (!negId) {
     //   // Cuando el id del negocio no existe lleva la app a la vista principal.
     //   history.push("/");
     // }
-   
-
 
     if (negocio) {
       setProducts([]);
       const dataResult = JSON.parse(negocio.getNegocioByIdResolver);
       setStateGonzalo(dataResult.dataNeg);
-      // console.log(stateGonzalo)
-
 
       setDeal(dataResult.dataNeg);
       setSharedUsers(dataResult.dataUsu);
@@ -365,7 +357,7 @@ const Deal = () => {
                     type="primary"
                     block
                     onClick={() => dealEdit()}
-                    disabled={deal.usu_asig_id !== idUser && idUser !== 1}
+                    disabled={deal.usu_asig_id !== idUser && !esUsuarioAdmin}
                   >
                     <EditOutlined /> Editar Negocio
                   </Button>
@@ -387,9 +379,9 @@ const Deal = () => {
                     type="dashed"
                     onClick={showProducts}
                     block
-                    disabled={deal.usu_asig_id !== idUser && idUser !== 1}
+                    disabled={deal.usu_asig_id !== idUser && !esUsuarioAdmin}
                   >
-                    <span style={{fontSize:"13px"}}>
+                    <span style={{ fontSize: "13px" }}>
                       Productos ({`${dealProducts.length}`})
                     </span>
                   </Button>
@@ -404,9 +396,9 @@ const Deal = () => {
                     type="dashed"
                     onClick={showCompetitors}
                     block
-                    disabled={deal.usu_asig_id !== idUser && idUser !== 1}
+                    disabled={deal.usu_asig_id !== idUser && !esUsuarioAdmin}
                   >
-                    <span style={{marginLeft:"-10px", fontSize:"13px"}}>
+                    <span style={{ marginLeft: "-10px", fontSize: "13px" }}>
                       Competidores ({`${dealCompetitors.length}`})
                     </span>
                   </Button>

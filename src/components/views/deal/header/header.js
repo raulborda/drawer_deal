@@ -54,9 +54,12 @@ const Header = ({ history, tags, stateGonzalo }) => {
     etapasFinal,
     pipeURL,
     setPipeURL,
+    esUsuarioAdmin,
   } = useContext(DealContext);
   const { setDrawerName, setDrawerDetail, showDrawer } =
     useContext(DrawerContext);
+
+  console.log(esUsuarioAdmin);
 
   //PIPE POR URL
   //  const url2 = window.location.search;
@@ -99,11 +102,10 @@ const Header = ({ history, tags, stateGonzalo }) => {
     variables: { idUsuAsig: usu_asig_id },
   });
 
-  console.log(stateGonzalo);
-
   const { data: dataCreador } = useQuery(GET_USUARIO_ASIG, {
     variables: { idUsuAsig: stateGonzalo?.usu_id },
   });
+  
   const [valorMonedaBase, setValorMonedaBase] = useState(null);
 
   useEffect(() => {
@@ -133,8 +135,6 @@ const Header = ({ history, tags, stateGonzalo }) => {
     showDrawer();
     // setNegId(deal.neg_id);
   };
-
-  console.log("DATA", dataCreador);
 
   const goToBack = () => {
     history.goBack();
@@ -282,7 +282,7 @@ const Header = ({ history, tags, stateGonzalo }) => {
                         style={{ margin: "0 5px" }}
                         onClick={onClickGanado}
                         disabled={
-                          stateGonzalo.usu_asig_id !== idUser && idUser !== 1
+                          stateGonzalo.usu_asig_id !== idUser && !esUsuarioAdmin
                         }
                       >
                         Ganado
@@ -295,7 +295,7 @@ const Header = ({ history, tags, stateGonzalo }) => {
                         style={{ margin: "0 5px" }}
                         onClick={onClickPerdido}
                         disabled={
-                          stateGonzalo.usu_asig_id !== idUser && idUser !== 1
+                          stateGonzalo.usu_asig_id !== idUser && !esUsuarioAdmin
                         }
                       >
                         Perdido

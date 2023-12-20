@@ -149,6 +149,7 @@ const App = () => {
 
   const { data: getConfig } = useQuery(GET_CONFIG, {});
   const { data: getUsuariosAsignados } = useQuery(GET_USUARIOS_ASIG_NEGOCIOS);
+  
   const [getGrupo, { data: getGrupoPorUsuario }] = useLazyQuery(
     GET_GRUPO_POR_USUARIO
   );
