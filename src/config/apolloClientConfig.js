@@ -16,7 +16,8 @@ const wsLink = new WebSocketLink({
   // uri: process.env.REACT_APP_WS_URL,
   // uri: "ws://localhost:4002/graphql",
   // uri: "ws://10.0.0.153:4002/graphql",
-  // uri: "ws://69.46.4.34:4002/8:4002",
+  // uri: "ws://69.46.4.34:4002/graphql",
+  // uri: "ws://37d2-152-169-45-70.ngrok-free.app/graphql",
   uri: `${WSURL}/graphql`,
   options: {
     reconnect: true,
@@ -27,6 +28,7 @@ const httpLink = new HttpLink({
   // uri: process.env.REACT_APP_GRAPHQL_URL,
   // uri: "http://10.0.0.153:4002/graphql",
   // uri: "http://69.46.4.34:4002/graphql",
+  // uri: "https://37d2-152-169-45-70.ngrok-free.app/graphql",
   uri: `${URL}/graphql`,
 });
 

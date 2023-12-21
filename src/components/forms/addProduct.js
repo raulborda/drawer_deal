@@ -4,7 +4,7 @@ import {
   FilePdfOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import {
   Button,
   Col,
@@ -32,6 +32,7 @@ import { DealContext } from "../context/DealCotext";
 import { DrawerContext } from "../context/DrawContext";
 import axios from "axios";
 import { Base64 } from "js-base64";
+import { getPDFHeaderData } from "../../Graphql/queries/pdfHeader";
 
 const AddProduct = () => {
   const PROTOCOL = window.location.protocol;
@@ -62,6 +63,8 @@ const AddProduct = () => {
     setDealProducts,
   } = useContext(DealContext);
   const selectProducto = useRef();
+
+  const { data: dataHeader } = useQuery(getPDFHeaderData);
 
   const [getProductLimit, { data }] = useLazyQuery(GET_PRODUCTOS_LIMIT, {
     // fetchPolicy: 'network-only',
@@ -279,7 +282,7 @@ const AddProduct = () => {
       render: (text, record) => (
         <Popconfirm
           title="¿Deseas eliminar el producto?"
-          style={{ width: 300 }}
+          // style={{ width: 300 }}
           okText="Borrar"
           placement="right"
           cancelText="Cerrar"
@@ -417,7 +420,13 @@ const AddProduct = () => {
   const onConfirmPDF = async () => {
     try {
       const completeDeal = { ...deal, neg_id: negId };
-      const data = { deal: completeDeal, productos: dealProducts };
+      const data = {
+        deal: completeDeal,
+        productos: dealProducts,
+        ownerData: dataHeader.getPDFHeaderResolver
+          ? JSON.parse(dataHeader.getPDFHeaderResolver)
+          : {},
+      };
 
       await new Promise((resolve) => {
         setTimeout(() => {

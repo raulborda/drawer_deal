@@ -184,15 +184,15 @@ const Deal = () => {
     if (negocio) {
       setProducts([]);
       const dataResult = JSON.parse(negocio.getNegocioByIdResolver);
-      setStateGonzalo(dataResult.dataNeg);
+      setStateGonzalo(dataResult?.dataNeg);
 
-      setDeal(dataResult.dataNeg);
-      setSharedUsers(dataResult.dataUsu);
+      setDeal(dataResult?.dataNeg);
+      setSharedUsers(dataResult?.dataUsu);
 
-      if (dataResult.dataNeg.eta_id) {
+      if (dataResult?.dataNeg?.eta_id) {
         setEtaId(dataResult.dataNeg.eta_id);
       }
-      if (dataResult.dataProd.length > 0) {
+      if (dataResult?.dataProd?.length > 0) {
         const Products = dataResult.dataProd;
         let total = 0;
 
@@ -215,7 +215,7 @@ const Deal = () => {
         setDealTotalProducts(0);
       }
 
-      if (dataResult.dataComp.length > 0) {
+      if (dataResult?.dataComp?.length > 0) {
         setDealCompetitors(dataResult.dataComp);
       } else {
         setDealCompetitors([]);
