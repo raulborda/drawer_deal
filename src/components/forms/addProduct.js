@@ -423,7 +423,7 @@ const AddProduct = () => {
       const data = {
         deal: completeDeal,
         productos: dealProducts,
-        ownerData: dataHeader.getPDFHeaderResolver
+        ownerData: dataHeader?.getPDFHeaderResolver
           ? JSON.parse(dataHeader.getPDFHeaderResolver)
           : {},
       };
@@ -431,13 +431,15 @@ const AddProduct = () => {
       await new Promise((resolve) => {
         setTimeout(() => {
           resolve(
-            getPDFPresupuesto(data).then((res) => {
-              if (res && res.data) {
-                downloadPDF(res.data);
-              } else {
-                message.warning("No fue posible generar el PDF.");
-              }
-            })
+            getPDFPresupuesto(data)
+              .then((res) => {
+                if (res && res.data) {
+                  downloadPDF(res.data);
+                } else {
+                  message.warning("No fue posible generar el PDF.");
+                }
+              })
+              .catch((error) => console.log(error))
           );
         }, 3000);
       });
