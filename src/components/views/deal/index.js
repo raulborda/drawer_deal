@@ -393,7 +393,7 @@ const Deal = () => {
     a.href = url;
 
     // Setea el atributo download y el nombre con el que se va a descargar
-    a.download = `Presupuesto negocio ${negId}.pdf`;
+    a.download = `Propuesta negocio ${negId}.pdf`;
 
     // Dispara la descarga
     a.click();
@@ -467,7 +467,7 @@ const Deal = () => {
                     onClick={() => onConfirmPDF()}
                     // disabled={deal.usu_asig_id !== idUser && !esUsuarioAdmin}
                   >
-                    <FilePdfOutlined style={{ color: "red" }} /> Presupuesto
+                    <FilePdfOutlined style={{ color: "red" }} /> Propuesta
                   </Button>
                 )}
               </Col>
