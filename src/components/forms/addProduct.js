@@ -34,6 +34,11 @@ import axios from "axios";
 import { Base64 } from "js-base64";
 
 const AddProduct = () => {
+  const PROTOCOL = window.location.protocol;
+  const HOSTNAME = window.location.hostname;
+
+  const PDFEXPORT = `${PROTOCOL}//${HOSTNAME}:${1400}/pdfExport`;
+
   // const [products, setProducts] = useState([]);
   const Option = Select.Option;
   const [form] = Form.useForm();
@@ -369,14 +374,14 @@ const AddProduct = () => {
       let config = {
         method: "post",
         maxBodyLength: Infinity,
-        url: `http://10.0.0.153:1400/pdfExport`,
-        // url: `https://us-central1-apiplatformwp.cloudfunctions.net/pdfExport`,
+        // url: `http://10.0.0.153:1400/pdfExport`,
+        url: PDFEXPORT,
         headers: {
           "Content-Type": "application/json",
         },
         responseType: "blob",
         data: JSON.stringify({
-          url: "https://storage.googleapis.com/brocoly/64c90e320dcc24527926cdd8/public/presupuesto.html",
+          url: "https://storage.googleapis.com/brocoly/64c90e320dcc24527926cdd8/public/presupuesto-daser.html",
           payload: data,
         }),
       };
@@ -409,23 +414,23 @@ const AddProduct = () => {
     window.URL.revokeObjectURL(url);
   };
 
-  const onConfirmPDF = () => {
+  const onConfirmPDF = async () => {
     try {
-      const data = { deal, productos: dealProducts };
-      new Promise((resolve) => {
-        setTimeout(
-          () =>
-            resolve(
-              getPDFPresupuesto(data).then((res) => {
-                if (res && res.data) {
-                  downloadPDF(res.data);
-                } else {
-                  message.warning("No fue posible generar el PDF.");
-                }
-              })
-            ),
-          3000
-        );
+      const completeDeal = { ...deal, neg_id: negId };
+      const data = { deal: completeDeal, productos: dealProducts };
+
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(
+            getPDFPresupuesto(data).then((res) => {
+              if (res && res.data) {
+                downloadPDF(res.data);
+              } else {
+                message.warning("No fue posible generar el PDF.");
+              }
+            })
+          );
+        }, 3000);
       });
     } catch (error) {
       message.warning("No fue posible generar el PDF.");

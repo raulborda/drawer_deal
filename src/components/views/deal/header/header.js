@@ -59,8 +59,6 @@ const Header = ({ history, tags, stateGonzalo }) => {
   const { setDrawerName, setDrawerDetail, showDrawer } =
     useContext(DrawerContext);
 
-  console.log(esUsuarioAdmin);
-
   //PIPE POR URL
   //  const url2 = window.location.search;
   //  const parsed2 = queryString.parse(url2);
@@ -105,7 +103,7 @@ const Header = ({ history, tags, stateGonzalo }) => {
   const { data: dataCreador } = useQuery(GET_USUARIO_ASIG, {
     variables: { idUsuAsig: stateGonzalo?.usu_id },
   });
-  
+
   const [valorMonedaBase, setValorMonedaBase] = useState(null);
 
   useEffect(() => {
