@@ -30,8 +30,7 @@ import { GET_PRODUCTOS_LIMIT } from "../../Graphql/queries/productos";
 import { setHistorial } from "../../utils/setHistorial";
 import { DealContext } from "../context/DealCotext";
 import { DrawerContext } from "../context/DrawContext";
-import axios from "axios";
-import { Base64 } from "js-base64";
+
 import { getPDFHeaderData } from "../../Graphql/queries/pdfHeader";
 
 const AddProduct = () => {
@@ -63,8 +62,6 @@ const AddProduct = () => {
     setDealProducts,
   } = useContext(DealContext);
   const selectProducto = useRef();
-
-  const { data: dataHeader } = useQuery(getPDFHeaderData);
 
   const [getProductLimit, { data }] = useLazyQuery(GET_PRODUCTOS_LIMIT, {
     // fetchPolicy: 'network-only',
@@ -370,89 +367,11 @@ const AddProduct = () => {
     onClose();
   };
 
-  const getPDFPresupuesto = async (data) => {
-    try {
-      data = Base64.encode(JSON.stringify(data), true);
-
-      let config = {
-        method: "post",
-        maxBodyLength: Infinity,
-        // url: `http://10.0.0.153:1400/pdfExport`,
-        url: PDFEXPORT,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        responseType: "blob",
-        data: JSON.stringify({
-          url: "https://storage.googleapis.com/brocoly/64c90e320dcc24527926cdd8/public/presupuesto-daser.html",
-          payload: data,
-        }),
-      };
-
-      const res = axios.request(config);
-
-      return await res;
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const downloadPDF = (data) => {
-    const blob = new Blob([data], { type: "application/pdf" });
-
-    // Crea una URL del blob
-    const url = window.URL.createObjectURL(blob);
-
-    // Crea un elemento anchor
-    const a = document.createElement("a");
-    a.href = url;
-
-    // Setea el atributo download y el nombre con el que se va a descargar
-    a.download = "presupuesto.pdf";
-
-    // Dispara la descarga
-    a.click();
-
-    // Libera el objeto URL
-    window.URL.revokeObjectURL(url);
-  };
-
-  const onConfirmPDF = async () => {
-    try {
-      const completeDeal = { ...deal, neg_id: negId };
-      const data = {
-        deal: completeDeal,
-        productos: dealProducts,
-        ownerData: dataHeader?.getPDFHeaderResolver
-          ? JSON.parse(dataHeader.getPDFHeaderResolver)
-          : {},
-      };
-
-      await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(
-            getPDFPresupuesto(data)
-              .then((res) => {
-                if (res && res.data) {
-                  downloadPDF(res.data);
-                } else {
-                  message.warning("No fue posible generar el PDF.");
-                }
-              })
-              .catch((error) => console.log(error))
-          );
-        }, 3000);
-      });
-    } catch (error) {
-      message.warning("No fue posible generar el PDF.");
-    }
-  };
-
   return (
     <Fragment>
       <ConfigProvider renderEmpty={empty}>
         <div className="layout-wrapper">
-          <span className="print-sheet">
+          {/* <span className="print-sheet">
             <Popconfirm
               icon={null}
               placement="leftTop"
@@ -463,7 +382,7 @@ const AddProduct = () => {
             >
               <FilePdfOutlined style={{ color: "red" }} />
             </Popconfirm>
-          </span>
+          </span> */}
           <div className="layout-form">
             <Form
               name="products"
@@ -573,7 +492,8 @@ const AddProduct = () => {
                 <Col xs={12}>
                   <Button
                     onClick={() => {
-                      setDealProducts([]);
+                      // setDealProducts([]);
+                      setProducts([]);
                       onClose();
                     }}
                     type="default"

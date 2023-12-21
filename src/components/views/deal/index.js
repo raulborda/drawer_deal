@@ -5,6 +5,9 @@ import {
   CalendarOutlined,
   EditOutlined,
   FileDoneOutlined,
+  FileOutlined,
+  FilePdfFilled,
+  FilePdfOutlined,
   FullscreenOutlined,
   MoreOutlined,
   PaperClipOutlined,
@@ -23,6 +26,7 @@ import {
   Steps,
   Tabs,
   Tooltip,
+  message,
 } from "antd";
 import React, { Fragment, useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -43,8 +47,18 @@ import SharedUsers from "./sharedUsers/sharedUsers";
 import { useRouter } from "../../../hook/useRouter";
 import queryString from "query-string";
 import { GET_ETAPAS_EMBUDOS } from "../../../Graphql/queries/embudos";
+import axios from "axios";
+import { Base64 } from "js-base64";
+import { getPDFHeaderData } from "../../../Graphql/queries/pdfHeader";
 
 const Deal = () => {
+  const PROTOCOL = window.location.protocol;
+  const HOSTNAME = window.location.hostname;
+
+  const PDFEXPORT = `${PROTOCOL}//${HOSTNAME}:${1400}/pdfExport`;
+
+  const { data: dataHeader } = useQuery(getPDFHeaderData);
+
   // Copy timeline
   const [notes, setNotes] = useState([]);
   const [tasks, setTasks] = useState([]);
@@ -55,6 +69,7 @@ const Deal = () => {
   const [AnchorNotes, setAnchorNotes] = useState([]);
   const [AnchorUploads, setAnchorUploads] = useState([]);
   const [filter, setFilter] = useState("");
+  const [pdfLoading, setPdfLoading] = useState(false);
 
   const [uploads, setUploads] = useState([]);
   // Historial temporal
@@ -339,6 +354,87 @@ const Deal = () => {
     );
   };
 
+  const getPDFPresupuesto = async (data) => {
+    try {
+      data = Base64.encode(JSON.stringify(data), true);
+
+      let config = {
+        method: "post",
+        maxBodyLength: Infinity,
+        // url: `http://10.0.0.153:1400/pdfExport`,
+        // url: `http://69.46.4.34:1400/pdfExport`,
+        url: PDFEXPORT,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        responseType: "blob",
+        data: JSON.stringify({
+          url: "https://storage.googleapis.com/brocoly/64c90e320dcc24527926cdd8/public/presupuesto-daser.html",
+          payload: data,
+        }),
+      };
+
+      const res = axios.request(config);
+
+      return await res;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const downloadPDF = (data) => {
+    const blob = new Blob([data], { type: "application/pdf" });
+
+    // Crea una URL del blob
+    const url = window.URL.createObjectURL(blob);
+
+    // Crea un elemento anchor
+    const a = document.createElement("a");
+    a.href = url;
+
+    // Setea el atributo download y el nombre con el que se va a descargar
+    a.download = `Presupuesto negocio ${negId}.pdf`;
+
+    // Dispara la descarga
+    a.click();
+
+    // Libera el objeto URL
+    window.URL.revokeObjectURL(url);
+  };
+
+  const onConfirmPDF = async () => {
+    try {
+      setPdfLoading(true);
+      const completeDeal = { ...deal, neg_id: negId };
+      const data = {
+        deal: completeDeal,
+        productos: dealProducts,
+        ownerData: dataHeader?.getPDFHeaderResolver
+          ? JSON.parse(dataHeader.getPDFHeaderResolver)
+          : {},
+      };
+
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(
+            getPDFPresupuesto(data)
+              .then((res) => {
+                if (res && res.data) {
+                  setPdfLoading(false);
+                  downloadPDF(res.data);
+                } else {
+                  message.warning("No fue posible generar el PDF.");
+                }
+              })
+              .catch((error) => console.log(error))
+          );
+        }, 3000);
+      });
+    } catch (error) {
+      message.warning("No fue posible generar el PDF.");
+    }
+  };
+
   return (
     <div className="deal_wrapper">
       <Row gutter={[20, 20]}>
@@ -350,8 +446,8 @@ const Deal = () => {
       <Row gutter={[20, 20]}>
         <Col xs={24} md={7}>
           <DealCard title="">
-            <Row gutter={[8, 8]}>
-              <Col xs={24}>
+            <Row gutter={[8, 8]} style={{ marginBottom: "8px" }}>
+              <Col xs={12}>
                 {deal.neg_estado === 0 && (
                   <Button
                     type="primary"
@@ -363,7 +459,21 @@ const Deal = () => {
                   </Button>
                 )}
               </Col>
+              <Col xs={12}>
+                {deal.neg_estado === 0 && (
+                  <Button
+                    block
+                    loading={pdfLoading}
+                    onClick={() => onConfirmPDF()}
+                    // disabled={deal.usu_asig_id !== idUser && !esUsuarioAdmin}
+                  >
+                    <FilePdfOutlined style={{ color: "red" }} /> Presupuesto
+                  </Button>
+                )}
+              </Col>
+            </Row>
 
+            <Row gutter={[8, 8]}>
               <Col xs={12}>
                 <Tooltip
                   placement="top"
