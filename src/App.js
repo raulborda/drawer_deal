@@ -363,6 +363,8 @@ const App = () => {
     setDrawer(true, false);
   };
 
+  console.log('version modulo-drawer-deal: 01.08.24')
+
   return (
     <DrawerContext.Provider
       value={{

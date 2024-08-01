@@ -16,6 +16,14 @@ export const GET_USUARIO = gql`
     }
   }
 `;
+export const GET_ALLUSUARIOS = gql`
+  query getAllUsuarios {
+    getAllUsuariosResolver {
+      usu_id
+      usu_nombre
+    }
+  }
+`;
 export const GET_USUARIO_ASIG = gql`
   query getUsu($idUsuAsig: Int) {
     getUsuAsigResolver(idUsuAsig: $idUsuAsig) {

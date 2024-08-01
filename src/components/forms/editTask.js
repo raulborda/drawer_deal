@@ -22,6 +22,7 @@ import { GET_TIPO_TAREA } from "../../Graphql/queries/tipoTarea";
 import { DealContext } from "../context/DealCotext";
 import { DrawerContext } from "../context/DrawContext";
 import { NoteContext } from "../context/NoteContext";
+import { GET_ALLUSUARIOS } from "../../Graphql/queries/usuario"; 
 import Note from "../timeline/components/note/note";
 import UploaTaskdItem from "../timeline/components/upload/uploadTaskItem";
 
@@ -37,6 +38,11 @@ const EditTask = ({ edit }) => {
   const { onClose } = useContext(DrawerContext);
   const [showTaskItem, setShowTaskItem] = useState(false);
   const [upload, setUpload] = useState(null);
+  const [usuarios, setUsuarios] = useState([]);
+  const [searchUser, setSearchUser] = useState("");
+
+  const { loading: usuariosLoading, error: usuariosError, data: usuariosData } = useQuery(GET_ALLUSUARIOS);
+
 
   const [updateTareaResolver] = useMutation(UPDATE_TAREA);
   const { data, loading } = useQuery(GET_TIPO_TAREA, {
@@ -54,6 +60,14 @@ const EditTask = ({ edit }) => {
   // const getContactos = useQuery(GET_CONTACTOS, {
   //   variables: { id: deal.cli_id },
   // });
+
+  useEffect(() => {
+
+    if (usuariosData) {
+      setUsuarios(usuariosData.getAllUsuariosResolver);
+    }
+
+  }, [edit, usuariosData]);
 
   useEffect(() => {
     //
@@ -187,6 +201,7 @@ const EditTask = ({ edit }) => {
         inputAdjunto,
         inputNota,
         idUsuario: deal.usu_id,
+        idUsuarioAsignado: v.usu_asig_id ? v.usu_asig_id : null,
       },
     });
 
@@ -221,6 +236,12 @@ const EditTask = ({ edit }) => {
     return form.setFieldsValue({ adj_detalle: "" });
   };
 
+  const onSearchUser = (val) => {
+    if (val.length >= 3) {
+      setSearchUser(val.toLowerCase());
+    }
+  };
+
   return (
     <Fragment>
       {edit && task && (
@@ -232,6 +253,7 @@ const EditTask = ({ edit }) => {
               name="etapas"
               layout="vertical"
               onFinish={onFinish}
+              initialValues={{ usu_asig_id: task ? task.idUsuarioAsignado : undefined }}
               autoComplete="off"
             >
               <div className="layout-form">
@@ -459,6 +481,38 @@ const EditTask = ({ edit }) => {
                     </p>
                   </Dragger>
                 )}
+
+                <Row gutter={[8, 8]}>
+                  <Col xs={24}>
+                    <Form.Item name="usu_asig_id" label="Asignar a usuario">
+                      {/* <Input prefix={<UserOutlined />} size="middle" placeholder="" /> */}
+                      <Select
+                        showSearch
+                        placeholder="Usuario"
+                        optionFilterProp="children"
+                        loading={usuariosLoading}
+                        //defaultValue={task && task.idUsuarioAsignado}
+                        onSearch={onSearchUser}
+                        filterOption={(input, option) =>
+                          option.props.children
+                            .toLowerCase()
+                            .indexOf(input.toLowerCase()) >= 0
+                        }
+                      >
+                        {usuarios &&
+                          usuarios.map((usuario) => {
+                            const { usu_id, usu_nombre } = usuario;
+                            return (
+                              <Option key={usu_id} value={usu_id}>
+                                {usu_nombre}
+                              </Option>
+                            );
+                          })}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                </Row>
+
               </div>
 
               <Form.Item style={{ marginTop: 30 }}>

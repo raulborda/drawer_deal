@@ -49,6 +49,7 @@ const TaskItem = ({ task, note, upload, taskStatus }) => {
     up_id,
     usu_nombre,
     con_nombre,
+    usuarioAsignado
   } = task;
   //
   const [estadoTareaResolver] = useMutation(UPDATE_ESTADO_TAREA);
@@ -183,7 +184,7 @@ const TaskItem = ({ task, note, upload, taskStatus }) => {
               <span className="task_date">
                 {moment(tar_fecha_ts).startOf("seconds").fromNow()}
               </span>
-              <span className="task_author">{usu_nombre}</span>
+              <span className="task_author">{usuarioAsignado}</span>
               <div className="task_business">
                 <ShopOutlined style={{ marginRight: 4 }} />
                 {cli_nombre}
