@@ -14,6 +14,18 @@ export const UPDATE_ESTADO_NEGOCIO = gql`
   }
 `;
 
+export const UPDATE_VALOR_NEGOCIO = gql`
+  mutation updateValorNegocio( 
+      $idNegocio: Int
+      $valor: Float
+    ) {
+    updateValorNegocioResolver(
+      idNegocio: $idNegocio
+      valor: $valor
+    )
+  }
+`;
+
 export const UPDATE_NEGOCIO = gql`
   mutation updateNegocio(
     $usuId: Int

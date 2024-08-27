@@ -32,6 +32,7 @@ import { DealContext } from "../context/DealCotext";
 import { DrawerContext } from "../context/DrawContext";
 
 import { getPDFHeaderData } from "../../Graphql/queries/pdfHeader";
+import { UPDATE_VALOR_NEGOCIO } from "../../Graphql/mutations/negocio";
 
 const AddProduct = () => {
   const PROTOCOL = window.location.protocol;
@@ -46,6 +47,8 @@ const AddProduct = () => {
 
   const [productList, setProductList] = useState([]);
   const [prodIdList, setProdIdList] = useState([]);
+
+  const [totalSum, setTotalSum] = useState(0);
 
   const { onChildrenDrawerClose, onClose } = useContext(DrawerContext);
   const {
@@ -110,7 +113,7 @@ const AddProduct = () => {
     );
   };
 
-  function onBlur() {}
+  function onBlur() { }
 
   function onFocus() {
     getProductLimit({
@@ -279,7 +282,6 @@ const AddProduct = () => {
       render: (text, record) => (
         <Popconfirm
           title="¿Deseas eliminar el producto?"
-          // style={{ width: 300 }}
           okText="Borrar"
           placement="right"
           cancelText="Cerrar"
@@ -301,7 +303,7 @@ const AddProduct = () => {
     },
   ];
 
-  const onChangeSelect = () => {};
+  const onChangeSelect = () => { };
 
   const saveProducts = () => {
     let description;
@@ -366,6 +368,35 @@ const AddProduct = () => {
     }
     onClose();
   };
+
+  const [updateValorNegocioResolver] = useMutation(UPDATE_VALOR_NEGOCIO);
+
+  const onConfirm = () => {
+
+    console.log("idNegocio:", negId)
+    console.log("valor:", totalSum)
+
+    updateValorNegocioResolver({ variables: { idNegocio: negId, valor: totalSum } }).then(() => {
+      saveProducts();
+    });
+  };
+
+
+  useEffect(() => {
+    const calculateTotalSum = () => {
+      let sum = 0;
+      products.forEach(({ cantidad, valor }) => {
+        sum += cantidad * valor;
+      });
+      setTotalSum(sum);
+    };
+
+    calculateTotalSum();
+  }, [products]);
+
+
+  console.log('deal', deal.neg_valor)
+
 
   return (
     <Fragment>
@@ -481,7 +512,23 @@ const AddProduct = () => {
                   dataSource={products}
                   columns={columns}
                   responsive
-                  // 	style={{ marginBottom: 10 }}
+                  summary={() => (
+                    <Table.Summary.Row>
+                      <Table.Summary.Cell index={0}>
+                        <span style={{ fontWeight: "bold" }}>Total</span>
+                      </Table.Summary.Cell>
+                      <Table.Summary.Cell colSpan={2} />
+                      <Table.Summary.Cell align="right">
+                        <span style={{ fontWeight: "bold" }}>
+                          {deal.mon_iso}{" "}
+                          {totalSum.toLocaleString("de-DE", {
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
+                      </Table.Summary.Cell>
+                      <Table.Summary.Cell />
+                    </Table.Summary.Row>
+                  )}
                 />
               </Col>
             </Row>
@@ -493,7 +540,7 @@ const AddProduct = () => {
                   <Button
                     onClick={() => {
                       // setDealProducts([]);
-                      setProducts([]);
+                      // setProducts([]);
                       onClose();
                     }}
                     type="default"
@@ -504,9 +551,32 @@ const AddProduct = () => {
                 </Col>
                 <Col xs={12}>
                   <Form.Item>
-                    <Button onClick={saveProducts} type="primary" block>
-                      Guardar
-                    </Button>
+                    {
+                      deal.neg_valor != totalSum ? (
+                        <Popconfirm
+                          title={`¿Desea igualar el valor del negocio al total de productos?`}
+                          okText="Si"
+                          cancelText="No"
+                          onConfirm={() => onConfirm()}
+                          onCancel={() => saveProducts()}
+                        >
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <Button
+                              type="primary" block>
+                              Guardar
+                            </Button>
+                          </div>
+                        </Popconfirm>
+                      )
+                        :
+                        (
+                          <Button onClick={saveProducts}
+                            type="primary" block>
+                            Guardar
+                          </Button>
+                        )
+                    }
+
                   </Form.Item>
                 </Col>
               </Row>
