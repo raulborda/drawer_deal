@@ -56,7 +56,7 @@ const Deal = () => {
   const HOSTNAME = window.location.hostname;
 
   const PDFEXPORT = `${PROTOCOL}//${HOSTNAME}:${1400}/pdfExport`; //Todos
-  //const PDFEXPORT = `${PROTOCOL}//${HOSTNAME}:${4001}/pdfExport`; //El Alamo
+  //const PDFEXPORT = `${PROTOCOL}//${HOSTNAME}:${4001}/pdfExport`; //El Alamo y Caverzasi
 
   const { data: dataHeader } = useQuery(getPDFHeaderData);
 
