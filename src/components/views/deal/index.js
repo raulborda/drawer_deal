@@ -55,8 +55,7 @@ const Deal = () => {
   const PROTOCOL = window.location.protocol;
   const HOSTNAME = window.location.hostname;
 
-  //const PDFEXPORT = `${PROTOCOL}//${HOSTNAME}:${1400}/pdfExport`; //Todos
-  const PDFEXPORT = `${PROTOCOL}//192.168.1.32:${1400}/pdfExport`; //Todos
+  const PDFEXPORT = `${PROTOCOL}//${HOSTNAME}:${1400}/pdfExport`; //Todos
   //const PDFEXPORT = `${PROTOCOL}//${HOSTNAME}:${4001}/pdfExport`; //El Alamo y Caverzasi
 
   const { data: dataHeader } = useQuery(getPDFHeaderData);
