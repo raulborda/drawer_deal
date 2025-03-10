@@ -55,7 +55,8 @@ const Deal = () => {
   const PROTOCOL = window.location.protocol;
   const HOSTNAME = window.location.hostname;
 
-  const PDFEXPORT = `${PROTOCOL}//${HOSTNAME}:${1400}/pdfExport`; //Todos
+  //const PDFEXPORT = `${PROTOCOL}//${HOSTNAME}:${1400}/pdfExport`; //Todos
+  const PDFEXPORT = `${PROTOCOL}//192.168.1.32:${1400}/pdfExport`; //Todos
   //const PDFEXPORT = `${PROTOCOL}//${HOSTNAME}:${4001}/pdfExport`; //El Alamo y Caverzasi
 
   const { data: dataHeader } = useQuery(getPDFHeaderData);
@@ -370,7 +371,8 @@ const Deal = () => {
         },
         responseType: "blob",
         data: JSON.stringify({
-          url: "https://storage.googleapis.com/brocoly/64c90e320dcc24527926cdd8/public/presupuesto-daser.html",
+          //url: "https://storage.googleapis.com/brocoly/64c90e320dcc24527926cdd8/public/presupuesto-daser.html", //General
+          url: "https://storage.googleapis.com/brocoly/64c90e320dcc24527926cdd8/public/presupuesto-conditions.html", //Terra Verde
           payload: data,
         }),
       };
@@ -414,6 +416,8 @@ const Deal = () => {
           ? JSON.parse(dataHeader.getPDFHeaderResolver)
           : {},
       };
+
+      console.log('data to pdf: ',data)
 
       await new Promise((resolve) => {
         setTimeout(() => {
