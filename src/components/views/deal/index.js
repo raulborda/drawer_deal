@@ -370,8 +370,8 @@ const Deal = () => {
         },
         responseType: "blob",
         data: JSON.stringify({
-          //url: "https://storage.googleapis.com/brocoly/64c90e320dcc24527926cdd8/public/presupuesto-daser.html", //General
-          url: "https://storage.googleapis.com/brocoly/64c90e320dcc24527926cdd8/public/presupuesto-conditions.html", //Terra Verde
+          url: "https://storage.googleapis.com/brocoly/64c90e320dcc24527926cdd8/public/presupuesto-daser.html", //General
+          //url: "https://storage.googleapis.com/brocoly/64c90e320dcc24527926cdd8/public/presupuesto-conditions.html", //Terra Verde
           payload: data,
         }),
       };
